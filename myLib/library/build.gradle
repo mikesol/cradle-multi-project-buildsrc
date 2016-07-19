@@ -1,0 +1,40 @@
+apply plugin: 'com.android.library'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+import org.mikesolomon.generators.MyCustomGenerator
+
+android {
+
+    compileSdkVersion "Google Inc.:Google APIs:23"
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "0.0.1"
+    }
+
+    def generatedSrcDir = new File(buildDir, "generated-src/src/main/java/")
+
+    sourceSets {
+        main {
+            java {
+                srcDirs += generatedSrcDir
+            }
+        }
+    }
+
+    task generateSources << {
+        MyCustomGenerator.generateSourceFiles(generatedSrcDir)
+    }
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn generateSources
+    }
+}
